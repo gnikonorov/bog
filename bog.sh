@@ -24,6 +24,10 @@ BOG_LOG_MODE=0
 BOG_LOG_DEFAULT_LOG_FILE='bog.log'
 BOG_LOG_FILE=''
 
+# BOG logging directory
+BOG_LOG_DEFAULT_LOG_DIRECTORY='.'
+BOG_LOG_DIRECTORY=''
+
 # The date format used by log entries
 BOG_LOG_DATE_FORMAT=''
 BOG_LOG_DATE_FORMAT_UNSET='UNSET'
@@ -31,6 +35,8 @@ BOG_LOG_DATE_FORMAT_UNSET='UNSET'
 # Return codes
 BOG_LOG_OK=0
 BOG_LOG_INVALID_LOG_MODE=1
+BOG_LOG_INVALID_LOG_DIR=2
+BOG_LOG_NONEXISTANT_LOG_DIR=3
 
 ################################################################
 # Logs the provided message 'log_message' as a debug message.
@@ -63,7 +69,7 @@ function bog_log_debug() {
     fi
 
     if [[ $BOG_LOG_MODE == "$BOG_LOG_TO_FILE" ]] || [[ $BOG_LOG_MODE == "$BOG_LOG_TO_BOTH" ]]; then
-        echo -e "$output_string" >> "$BOG_LOG_FILE"
+        echo -e "$output_string" >> "${BOG_LOG_DIRECTORY}/${BOG_LOG_FILE}"
     fi
 }
 
@@ -98,7 +104,7 @@ function bog_log_info() {
     fi
 
     if [[ $BOG_LOG_MODE == "$BOG_LOG_TO_FILE" ]] || [[ $BOG_LOG_MODE == "$BOG_LOG_TO_BOTH" ]]; then
-        echo -e "$output_string" >> "$BOG_LOG_FILE"
+        echo -e "$output_string" >> "${BOG_LOG_DIRECTORY}/${BOG_LOG_FILE}"
     fi
 }
 
@@ -133,7 +139,7 @@ function bog_log_warning() {
     fi
 
     if [[ $BOG_LOG_MODE == "$BOG_LOG_TO_FILE" ]] || [[ $BOG_LOG_MODE == "$BOG_LOG_TO_BOTH" ]]; then
-        echo -e "$output_string" >> "$BOG_LOG_FILE"
+        echo -e "$output_string" >> "${BOG_LOG_DIRECTORY}/${BOG_LOG_FILE}"
     fi
 }
 
@@ -168,7 +174,7 @@ function bog_log_error() {
     fi
 
     if [[ $BOG_LOG_MODE == "$BOG_LOG_TO_FILE" ]] || [[ $BOG_LOG_MODE == "$BOG_LOG_TO_BOTH" ]]; then
-        echo -e "$output_string" >> "$BOG_LOG_FILE"
+        echo -e "$output_string" >> "${BOG_LOG_DIRECTORY}/${BOG_LOG_FILE}"
     fi
 }
 
@@ -203,34 +209,63 @@ function bog_log_fatal() {
     fi
 
     if [[ $BOG_LOG_MODE == "$BOG_LOG_TO_FILE" ]] || [[ $BOG_LOG_MODE == "$BOG_LOG_TO_BOTH" ]]; then
-        echo -e "$output_string" >> "$BOG_LOG_FILE"
+        echo -e "$output_string" >> "${BOG_LOG_DIRECTORY}/${BOG_LOG_FILE}"
     fi
 }
 
-###########################################################################
-# Sets the mode of the logger.
+###############################################################################
+# Sets the log directory used by the logger to 'new_log_directory'.
+# If 'create_directory' is passed, create the log directory if it does not
+# exist. If the directory could not be created, return an error.
 #
 # Globals:
-#   BOG_LOG_MODE
-#   BOG_LOG_TO_BOTH
-#   BOG_LOG_TO_FILE
-#   BOG_LOG_TO_STDOUT_STDERR
-# Arguments:
-#   log_mode: The mode to log in
+#   BOG_LOG_DIRECTORY
+# Arguements:
+#   log_directory:    The directory to store logs in
+#   create_directory: If this flag is true, create the directory
+#                     if it does not exist.
 # Returns:
-#   A status code indicating wether the log setting mode was successful.
-###########################################################################
-function bog_set_log_mode() {
-    local new_log_mode="$1"
+#   A status code indicating wether the log directory was set successfully.
+###############################################################################
+function bog_set_log_directory() {
+    local new_log_directory="$1"
 
-    local valid_log_modes=($BOG_LOG_TO_STDOUT_STDERR $BOG_LOG_TO_FILE $BOG_LOG_TO_BOTH)
-    if [[ ! "${valid_log_modes[*]}" =~ ${new_log_mode} ]]; then
-        >&2 echo "Invalid log mode '${new_log_mode}' provided; not setting log mode."
-        return $BOG_LOG_INVALID_LOG_MODE
+    # assume we are not creating the directory if no argument is passed for 'create_directory'
+    local create_directory
+    if [ -z "${2+x}" ]; then
+        create_directory=0
+    else
+        create_directory="$2"
     fi
-    BOG_LOG_MODE="$new_log_mode"
 
-    return $BOG_LOG_OK
+    local return_code
+    local dash_e_set=0
+    if [ "$create_directory" != "0" ] && [ ! -d "$new_log_directory" ]; then
+        # disable set -e if it is set so that we can handle errors
+        if echo "$-" | grep 'e' >/dev/null 2>&1; then
+            set +e
+            dash_e_set=1
+        fi
+
+        mkdir "$new_log_directory"
+        return_code="$?"
+
+        if [ $dash_e_set == "1" ]; then
+            set -e
+        fi
+
+        if [ $return_code != "0" ]; then
+            >&2 echo "Creating log directory FAILED. See output above."
+            return $BOG_LOG_INVALID_LOG_DIR
+        fi
+    fi
+
+    BOG_LOG_DIRECTORY="$new_log_directory"
+
+    if [ ! -d "$BOG_LOG_DIRECTORY" ]; then
+        echo "WARNING: Log directory set to '$BOG_LOG_DIRECTORY' but directory does not exist."
+        return $BOG_LOG_NONEXISTANT_LOG_DIR
+    fi
 }
 
 #############################################################################
@@ -251,6 +286,32 @@ function bog_set_log_file() {
     return $BOG_LOG_OK
 }
 
+###########################################################################
+# Sets the mode of the logger.
+#
+# Globals:
+#   BOG_LOG_MODE
+#   BOG_LOG_TO_BOTH
+#   BOG_LOG_TO_FILE
+#   BOG_LOG_TO_STDOUT_STDERR
+# Arguments:
+#   log_mode: The mode to log in
+# Returns:
+#   A status code indicating wether the log setting mode was successful.
+###########################################################################
+function bog_set_log_mode() {
+    local new_log_mode="$1"
+
+    local valid_log_modes=("$BOG_LOG_TO_STDOUT_STDERR" "$BOG_LOG_TO_FILE" "$BOG_LOG_TO_BOTH")
+    if [[ ! "${valid_log_modes[*]}" =~ ${new_log_mode} ]]; then
+        >&2 echo "Invalid log mode '${new_log_mode}' provided; not setting log mode."
+        return $BOG_LOG_INVALID_LOG_MODE
+    fi
+    BOG_LOG_MODE="$new_log_mode"
+
+    return $BOG_LOG_OK
+}
+
 ###################################################################################
 # Sets the timestamp format the logger will use. This format must be compatible
 # with the date command.
@@ -266,13 +327,13 @@ function bog_set_timestamp_format() {
     local new_date_format="$1"
 
     # TODO: Verify that this format is valid?
-    # TODO: remove quotes around time format
     BOG_LOG_DATE_FORMAT="$new_date_format"
 
     return $BOG_LOG_OK
 }
 
-# by default logging will go to STDOUT/STDERR
+# set logger defaults
 BOG_LOG_MODE=$BOG_LOG_TO_STDOUT_STDERR
 BOG_LOG_FILE=$BOG_LOG_DEFAULT_LOG_FILE
 BOG_LOG_DATE_FORMAT=$BOG_LOG_DATE_FORMAT_UNSET
+BOG_LOG_DIRECTORY=$BOG_LOG_DEFAULT_LOG_DIRECTORY
