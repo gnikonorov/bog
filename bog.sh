@@ -5,13 +5,32 @@
 # By default, output will go to STDOUT and STDERR streams as follows:
 #   debug, info and warning will go to STDOUT
 #   error and fatal will go to STDERR
+#
+# Logging may be specified to go to STDOUT/STDERR, a file, or both.
+# By default, logging will go to STDOUT/STDERR
+
+# BOG logging modes
+BOG_LOG_TO_STDOUT_STDERR=1
+BOG_LOG_TO_FILE=2
+BOG_LOG_TO_BOTH=3
+BOG_LOG_MODE=0
+
+# BOG log file
+BOG_LOG_DEFAULT_LOG_FILE='bog.log'
+BOG_LOG_FILE=''
 
 function bog_log_debug() {
     local log_message="$1"
     local output_string
 
     output_string="DEBUG: $(date) - $log_message"
-    echo -e "$output_string"
+    if [[ $BOG_LOG_MODE == "$BOG_LOG_TO_STDOUT_STDERR" ]] || [[ $BOG_LOG_MODE == "$BOG_LOG_TO_BOTH" ]]; then
+        echo -e "$output_string"
+    fi
+
+    if [[ $BOG_LOG_MODE == "$BOG_LOG_TO_FILE" ]] || [[ $BOG_LOG_MODE == "$BOG_LOG_TO_BOTH" ]]; then
+        echo -e "$output_string" >> "$BOG_LOG_FILE"
+    fi
 }
 
 function bog_log_info() {
@@ -19,7 +38,13 @@ function bog_log_info() {
     local output_string
 
     output_string="INFO: $(date) - $log_message"
-    echo -e "$output_string"
+    if [[ $BOG_LOG_MODE == "$BOG_LOG_TO_STDOUT_STDERR" ]] || [[ $BOG_LOG_MODE == "$BOG_LOG_TO_BOTH" ]]; then
+        echo -e "$output_string"
+    fi
+
+    if [[ $BOG_LOG_MODE == "$BOG_LOG_TO_FILE" ]] || [[ $BOG_LOG_MODE == "$BOG_LOG_TO_BOTH" ]]; then
+        echo -e "$output_string" >> "$BOG_LOG_FILE"
+    fi
 }
 
 function bog_log_warning() {
@@ -27,7 +52,13 @@ function bog_log_warning() {
     local output_string
 
     output_string="WARNING: $(date) - $log_message"
-    echo -e "$output_string"
+    if [[ $BOG_LOG_MODE == "$BOG_LOG_TO_STDOUT_STDERR" ]] || [[ $BOG_LOG_MODE == "$BOG_LOG_TO_BOTH" ]]; then
+        echo -e "$output_string"
+    fi
+
+    if [[ $BOG_LOG_MODE == "$BOG_LOG_TO_FILE" ]] || [[ $BOG_LOG_MODE == "$BOG_LOG_TO_BOTH" ]]; then
+        echo -e "$output_string" >> "$BOG_LOG_FILE"
+    fi
 }
 
 function bog_log_error() {
@@ -35,7 +66,13 @@ function bog_log_error() {
     local output_string
 
     output_string="ERROR: $(date) - $log_message"
-    >&2 echo -e "$output_string"
+    if [[ $BOG_LOG_MODE == "$BOG_LOG_TO_STDOUT_STDERR" ]] || [[ $BOG_LOG_MODE == "$BOG_LOG_TO_BOTH" ]]; then
+        >&2 echo -e "$output_string"
+    fi
+
+    if [[ $BOG_LOG_MODE == "$BOG_LOG_TO_FILE" ]] || [[ $BOG_LOG_MODE == "$BOG_LOG_TO_BOTH" ]]; then
+        echo -e "$output_string" >> "$BOG_LOG_FILE"
+    fi
 }
 
 function bog_log_fatal() {
@@ -43,5 +80,15 @@ function bog_log_fatal() {
     local output_string
 
     output_string="FATAL: $(date) - $log_message"
-    >&2 echo -e "$output_string"
+    if [[ $BOG_LOG_MODE == "$BOG_LOG_TO_STDOUT_STDERR" ]] || [[ $BOG_LOG_MODE == "$BOG_LOG_TO_BOTH" ]]; then
+        >&2 echo -e "$output_string"
+    fi
+
+    if [[ $BOG_LOG_MODE == "$BOG_LOG_TO_FILE" ]] || [[ $BOG_LOG_MODE == "$BOG_LOG_TO_BOTH" ]]; then
+        echo -e "$output_string" >> "$BOG_LOG_FILE"
+    fi
 }
+
+# by default logging will go to STDOUT/STDERR
+BOG_LOG_MODE=$BOG_LOG_TO_STDOUT_STDERR
+BOG_LOG_FILE=$BOG_LOG_DEFAULT_LOG_FILE
