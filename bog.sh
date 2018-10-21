@@ -19,6 +19,20 @@ BOG_LOG_MODE=0
 BOG_LOG_DEFAULT_LOG_FILE='bog.log'
 BOG_LOG_FILE=''
 
+################################################################
+# Logs the provided message 'log_message' as a debug message.
+#
+# Globals:
+#   BOG_LOG_FILE
+#   BOG_LOG_MODE
+#   BOG_LOG_TO_BOTH
+#   BOG_LOG_TO_FILE
+#   BOG_LOG_TO_STDOUT_STDERR
+# Arguments:
+#   log_message: The message to log
+# Returns:
+#   None
+################################################################
 function bog_log_debug() {
     local log_message="$1"
     local output_string
@@ -33,6 +47,20 @@ function bog_log_debug() {
     fi
 }
 
+################################################################
+# Logs the provided message 'log_message' as an info message.
+#
+# Globals:
+#   BOG_LOG_FILE
+#   BOG_LOG_MODE
+#   BOG_LOG_TO_BOTH
+#   BOG_LOG_TO_FILE
+#   BOG_LOG_TO_STDOUT_STDERR
+# Arguments:
+#   log_message: The message to log
+# Returns:
+#   None
+################################################################
 function bog_log_info() {
     local log_message="$1"
     local output_string
@@ -47,6 +75,20 @@ function bog_log_info() {
     fi
 }
 
+################################################################
+# Logs the provided message 'log_message' as a warning message.
+#
+# Globals:
+#   BOG_LOG_FILE
+#   BOG_LOG_MODE
+#   BOG_LOG_TO_BOTH
+#   BOG_LOG_TO_FILE
+#   BOG_LOG_TO_STDOUT_STDERR
+# Arguments:
+#   log_message: The message to log
+# Returns:
+#   None
+################################################################
 function bog_log_warning() {
     local log_message="$1"
     local output_string
@@ -61,6 +103,20 @@ function bog_log_warning() {
     fi
 }
 
+################################################################
+# Logs the provided message 'log_message' as an error message.
+#
+# Globals:
+#   BOG_LOG_FILE
+#   BOG_LOG_MODE
+#   BOG_LOG_TO_BOTH
+#   BOG_LOG_TO_FILE
+#   BOG_LOG_TO_STDOUT_STDERR
+# Arguments:
+#   log_message: The message to log
+# Returns:
+#   None
+################################################################
 function bog_log_error() {
     local log_message="$1"
     local output_string
@@ -75,6 +131,20 @@ function bog_log_error() {
     fi
 }
 
+################################################################
+# Logs the provided message 'log_message' as a fatal message.
+#
+# Globals:
+#   BOG_LOG_FILE
+#   BOG_LOG_MODE
+#   BOG_LOG_TO_BOTH
+#   BOG_LOG_TO_FILE
+#   BOG_LOG_TO_STDOUT_STDERR
+# Arguments:
+#   log_message: The message to log
+# Returns:
+#   None
+################################################################
 function bog_log_fatal() {
     local log_message="$1"
     local output_string
