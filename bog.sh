@@ -54,7 +54,7 @@ function bog_log_debug() {
     if [ "$BOG_LOG_DATE_FORMAT" == "$BOG_LOG_DATE_FORMAT_UNSET" ]; then
         timestamp="$(date)"
     else
-        timestamp=$(date +\'${BOG_LOG_DATE_FORMAT}\')
+        timestamp=$(date +${BOG_LOG_DATE_FORMAT})
     fi
 
     output_string="DEBUG: ${timestamp} - ${log_message}"
@@ -89,7 +89,7 @@ function bog_log_info() {
     if [ "$BOG_LOG_DATE_FORMAT" == "$BOG_LOG_DATE_FORMAT_UNSET" ]; then
         timestamp="$(date)"
     else
-        timestamp=$(date +\'${BOG_LOG_DATE_FORMAT}\')
+        timestamp=$(date +${BOG_LOG_DATE_FORMAT})
     fi
 
     output_string="INFO: ${timestamp} - ${log_message}"
@@ -124,7 +124,7 @@ function bog_log_warning() {
     if [ "$BOG_LOG_DATE_FORMAT" == "$BOG_LOG_DATE_FORMAT_UNSET" ]; then
         timestamp="$(date)"
     else
-        timestamp=$(date +\'${BOG_LOG_DATE_FORMAT}\')
+        timestamp=$(date +${BOG_LOG_DATE_FORMAT})
     fi
 
     output_string="WARNING: ${timestamp} - ${log_message}"
@@ -159,7 +159,7 @@ function bog_log_error() {
     if [ "$BOG_LOG_DATE_FORMAT" == "$BOG_LOG_DATE_FORMAT_UNSET" ]; then
         timestamp="$(date)"
     else
-        timestamp=$(date +\'${BOG_LOG_DATE_FORMAT}\')
+        timestamp=$(date +${BOG_LOG_DATE_FORMAT})
     fi
 
     output_string="ERROR: ${timestamp} - ${log_message}"
@@ -194,7 +194,7 @@ function bog_log_fatal() {
     if [ "$BOG_LOG_DATE_FORMAT" == "$BOG_LOG_DATE_FORMAT_UNSET" ]; then
         timestamp="$(date)"
     else
-        timestamp=$(date +\'${BOG_LOG_DATE_FORMAT}\')
+        timestamp=$(date +${BOG_LOG_DATE_FORMAT})
     fi
 
     output_string="FATAL: ${timestamp} - ${log_message}"
