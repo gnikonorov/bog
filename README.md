@@ -37,7 +37,7 @@ Bog implements the following logging levels:
 ### Logging modes
 
 Bog allows logging modes:
-* To set the mode: `set_log_mode $BOG_LOG_TO_FILE`.
+* To set the mode: `bog_set_log_mode $BOG_LOG_TO_FILE`.
 * The following modes are supported:
   * `$BOG_LOG_TO_STDOUT_STDERR`: Logs output to `STDOUT`/`STDERR`
     * In this mode `DEBUG`, `INFO`, and `WARNING` messages will go to `STDOUT` and `ERROR` and `FATAL` messages will go to `STDERR`
@@ -47,7 +47,7 @@ Bog allows logging modes:
 ### Logging file names
 
 Bog allows you to specify the path of a file to write to. To specify a filename:
-* `set_log_file "my_log_file.log"`
+* `bog_set_log_file "my_log_file.log"`
 
 By default, the file used is `bog.log`
 
@@ -60,7 +60,7 @@ DEBUG: Sun Oct 21 16:14:39 EDT 2018 - This is a debug message
 
 The timestamp is taken from running `date`, and you can specify the timestamp by providing a `date` compatable format string. For example:
 ```
-set_timestamp_format '%T'
+bog_set_timestamp_format '%T'
 bog_log_debug "This is a debug message"
 ```
 

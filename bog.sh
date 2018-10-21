@@ -220,7 +220,7 @@ function bog_log_fatal() {
 # Returns:
 #   A status code indicating wether the log setting mode was successful.
 ###########################################################################
-function set_log_mode() {
+function bog_set_log_mode() {
     local new_log_mode="$1"
 
     local valid_log_modes=($BOG_LOG_TO_STDOUT_STDERR $BOG_LOG_TO_FILE $BOG_LOG_TO_BOTH)
@@ -243,7 +243,7 @@ function set_log_mode() {
 # Returns:
 #   A status code indicating wether the log file assignment was successful
 #############################################################################
-function set_log_file() {
+function bog_set_log_file() {
     # TODO: Add option of creating subdirectory for loging? Maybe?
     local new_log_file="$1"
     BOG_LOG_FILE="$new_log_file"
@@ -262,10 +262,11 @@ function set_log_file() {
 # Returns:
 #   A status code indicating wether the format assignment was successful
 ###################################################################################
-function set_timestamp_format() {
+function bog_set_timestamp_format() {
     local new_date_format="$1"
 
     # TODO: Verify that this format is valid?
+    # TODO: remove quotes around time format
     BOG_LOG_DATE_FORMAT="$new_date_format"
 
     return $BOG_LOG_OK
