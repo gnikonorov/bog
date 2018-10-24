@@ -44,12 +44,27 @@ Bog allows logging modes:
   * `$BOG_LOG_TO_FILE`: Logs output to a file
   * `$BOG_LOG_TO_BOTH`: Logs output to `STDOUT`/`STDERR`, and also to a file
 
-### Logging file names
+### Log file names
 
-Bog allows you to specify the path of a file to write to. To specify a filename:
+Bog allows you to specify the name of a file to write to. To specify a filename:
 * `bog_set_log_file "my_log_file.log"`
 
-By default, the file used is `bog.log`
+By default, the file used is `bog.log`. Do not use this function to specify a log file path. If you would like to specify a path, please see the `Log directory` section directly below.
+
+### Log directory
+
+Bog allows you to specify the directory in which to store logs. If you do not specify a value, `.` ( the current directory ) is used. You may specify any valid folder structure the process will have write access to.
+
+A flag may be passed to indicate you wish to create any necessary folders. By default, no folders are created.
+
+To specify a log directory and not create any folders:
+* `bog_set_log_directory "/dir/not/created/if/dne" 0`
+* `bog_set_log_directory "/dir/not/created/if/dne"`
+
+To specify a log directory and create all needed subfolders:
+* `bog_set_log_directory "/dir/created/if/dne" 1`
+* `bog_set_log_directory "/dir/created/if/dne" peat`
+* `bog_set_log_directory "/dir/created/if/dne" marsh`
 
 ### Log entry format
 
@@ -66,5 +81,5 @@ bog_log_debug "This is a debug message"
 
 Would yield:
 ```
-DEBUG: '16:28:12' - This is a debug message
+DEBUG: 16:28:12 - This is a debug message
 ```

@@ -13,6 +13,7 @@
 #   The log file to write to
 #   The log mode
 #   The time format of log entries. Note that the provided format must be compatable with the `date` command
+# TODO: Add ability to create custom logging levels
 
 # BOG logging modes
 BOG_LOG_TO_STDOUT_STDERR=1
@@ -247,7 +248,7 @@ function bog_set_log_directory() {
             dash_e_set=1
         fi
 
-        mkdir "$new_log_directory"
+        mkdir --parents "$new_log_directory"
         return_code="$?"
 
         if [ $dash_e_set == "1" ]; then
@@ -279,7 +280,6 @@ function bog_set_log_directory() {
 #   A status code indicating wether the log file assignment was successful
 #############################################################################
 function bog_set_log_file() {
-    # TODO: Add option of creating subdirectory for loging? Maybe?
     local new_log_file="$1"
     BOG_LOG_FILE="$new_log_file"
 
